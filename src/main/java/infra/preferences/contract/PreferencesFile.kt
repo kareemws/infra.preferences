@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import infra.preferences.model.Property
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import java.lang.reflect.Type
 
@@ -17,8 +19,13 @@ abstract class PreferencesFile {
 
     private var sharedPreferenceInstance: SharedPreferences? = null
 
-    suspend fun initializeFile(context: Context) {
+    private val properties: ArrayList<Property<*>> = ArrayList()
+
+    suspend fun initializeFile(context: Context) = withContext(Dispatchers.Default) {
         sharedPreferenceInstance = context.getSharedPreferences(fileName, mode)
+        properties.forEach {
+            it.init()
+        }
     }
 
     fun <T> retrieveValue(propertyName: String): T? = try {
@@ -51,5 +58,11 @@ abstract class PreferencesFile {
         } catch (e: KotlinNullPointerException) {
             throw KotlinNullPointerException(PREFERENCES_INITIALIZATION_MESSAGE)
         }
+    }
+
+    fun attachProperty(property: Property<*>) {
+        properties.add(property)
+        if (sharedPreferenceInstance != null)
+            property.init()
     }
 }

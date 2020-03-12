@@ -21,8 +21,11 @@ class Property<T> @JvmOverloads constructor(
             }
         }
 
+    var initializationValue: T? = null
+
     init {
-        this.value = value
+        initializationValue = value
+        preferencesFile.attachProperty(this)
     }
 
     private val observers: ArrayList<Observer<T>> = ArrayList()
@@ -48,6 +51,10 @@ class Property<T> @JvmOverloads constructor(
 
     fun stopObserving(observer: Observer<T>) {
         observers.remove(observer)
+    }
+
+    fun init() {
+        value = initializationValue
     }
 
     private fun notifyObservers() {

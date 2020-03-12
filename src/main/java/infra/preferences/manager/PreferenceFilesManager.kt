@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 
 object PreferenceFilesManager {
 
-    private var context: Context? = null
+    var context: Context? = null
         set(value) {
             field = value
             initializePreferenceFiles()
