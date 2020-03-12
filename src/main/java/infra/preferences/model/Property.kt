@@ -5,7 +5,7 @@ import infra.preferences.contract.PreferencesFile
 
 class Property<T> @JvmOverloads constructor(
     private val name: String,
-    private val preferencesFile: PreferencesFile,
+    private val preferencesFile: PreferencesFile?,
     value: T? = null,
     private val shouldStore: Boolean = false
 ) {
@@ -25,21 +25,21 @@ class Property<T> @JvmOverloads constructor(
 
     init {
         initializationValue = value
-        preferencesFile.attachProperty(this)
+        preferencesFile?.attachProperty(this)
     }
 
     private val observers: ArrayList<Observer<T>> = ArrayList()
 
     private fun getValue(value: T?): T? = when {
         shouldStore && value != null -> {
-            preferencesFile.storeValue(name, value)
+            preferencesFile?.storeValue(name, value)
             value
         }
         shouldStore && value == null && !isInitialized -> {
-            preferencesFile.retrieveValue(name)
+            preferencesFile?.retrieveValue(name)
         }
         shouldStore && value == null && isInitialized -> {
-            preferencesFile.deleteValue(name)
+            preferencesFile?.deleteValue(name)
             value
         }
         else -> value

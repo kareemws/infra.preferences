@@ -65,4 +65,10 @@ abstract class PreferencesFile {
         if (sharedPreferenceInstance != null)
             property.init()
     }
+
+    fun clearFile() {
+        properties.forEach {
+            it.value = null
+        }
+    }
 }
