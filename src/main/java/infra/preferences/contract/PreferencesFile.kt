@@ -38,7 +38,7 @@ abstract class PreferencesFile {
     }
 
     fun <T> storeValue(propertyName: String, value: T) {
-        val serializedValue = Gson().toJson(value)
+        val serializedValue = Gson().toJson(value, object : TypeToken<T>() {}.type)
         try {
             with(sharedPreferenceInstance!!.edit()) {
                 putString(propertyName, serializedValue)

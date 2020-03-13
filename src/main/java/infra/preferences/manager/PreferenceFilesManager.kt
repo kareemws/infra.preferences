@@ -24,16 +24,13 @@ object PreferenceFilesManager {
         }
     }
 
-    fun attachPreferenceFile(preferencesFile: PreferencesFile) {
-        preferenceFiles.add(preferencesFile)
+    fun initializePreferenceFile(preferencesFile: PreferencesFile) {
         context?.let {
             GlobalScope.launch(Dispatchers.Default) {
                 preferencesFile.initializeFile(it)
             }
+        } ?: kotlin.run {
+            preferenceFiles.add(preferencesFile)
         }
-    }
-
-    fun detachPreferenceFile(preferencesFile: PreferencesFile) {
-        preferenceFiles.remove(preferencesFile)
     }
 }
