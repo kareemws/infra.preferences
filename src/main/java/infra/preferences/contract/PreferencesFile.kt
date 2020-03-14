@@ -21,7 +21,7 @@ abstract class PreferencesFile {
 
     private val properties: ArrayList<Property<*>> = ArrayList()
 
-    suspend fun initializeFile(context: Context) = withContext(Dispatchers.Default) {
+    fun initializeFile(context: Context) {
         sharedPreferenceInstance = context.getSharedPreferences(fileName, mode)
         properties.forEach {
             it.init()

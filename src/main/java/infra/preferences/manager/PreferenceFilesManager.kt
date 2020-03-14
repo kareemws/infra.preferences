@@ -17,18 +17,14 @@ object PreferenceFilesManager {
     private val preferenceFiles: ArrayList<PreferencesFile> = ArrayList()
 
     private fun initializePreferenceFiles() {
-        GlobalScope.launch(Dispatchers.Default) {
-            preferenceFiles.forEach {
-                it.initializeFile(context!!)
-            }
+        preferenceFiles.forEach {
+            it.initializeFile(context!!)
         }
     }
 
     fun initializePreferenceFile(preferencesFile: PreferencesFile) {
         context?.let {
-            GlobalScope.launch(Dispatchers.Default) {
-                preferencesFile.initializeFile(it)
-            }
+            preferencesFile.initializeFile(it)
         } ?: kotlin.run {
             preferenceFiles.add(preferencesFile)
         }
