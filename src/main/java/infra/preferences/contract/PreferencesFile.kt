@@ -28,17 +28,17 @@ abstract class PreferencesFile {
         }
     }
 
-    fun <T> retrieveValue(propertyName: String): T? = try {
+    fun <T> retrieveValue(propertyName: String, type: Type): T? = try {
         val serializedValue = sharedPreferenceInstance!!.getString(propertyName, null)
         serializedValue?.let {
-            Gson().fromJson<T>(it, object : TypeToken<T>() {}.type)
+            Gson().fromJson<T>(it, type)
         }
     } catch (e: KotlinNullPointerException) {
         throw KotlinNullPointerException(PREFERENCES_INITIALIZATION_MESSAGE)
     }
 
     fun <T> storeValue(propertyName: String, value: T) {
-        val serializedValue = Gson().toJson(value, object : TypeToken<T>() {}.type)
+        val serializedValue = Gson().toJson(value)
         try {
             with(sharedPreferenceInstance!!.edit()) {
                 putString(propertyName, serializedValue)

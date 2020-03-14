@@ -1,13 +1,16 @@
 package infra.preferences.model
 
 import androidx.lifecycle.Observer
+import com.google.gson.reflect.TypeToken
 import infra.preferences.contract.PreferencesFile
+import java.lang.reflect.Type
 
 class Property<T> @JvmOverloads constructor(
     private val name: String,
     private val preferencesFile: PreferencesFile?,
-    value: T? = null,
-    private val shouldStore: Boolean = false
+    private val type: Type,
+    private val shouldStore: Boolean = false,
+    value: T? = null
 ) {
 
     private var isInitialized = false
@@ -36,7 +39,7 @@ class Property<T> @JvmOverloads constructor(
             value
         }
         shouldStore && value == null && !isInitialized -> {
-            preferencesFile?.retrieveValue(name)
+            preferencesFile?.retrieveValue(name, type)
         }
         shouldStore && value == null && isInitialized -> {
             preferencesFile?.deleteValue(name)
