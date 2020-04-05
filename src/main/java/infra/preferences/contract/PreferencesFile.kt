@@ -3,11 +3,7 @@ package infra.preferences.contract
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import infra.preferences.model.Property
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
+import infra.preferences.model.PersistentProperty
 import java.lang.reflect.Type
 
 private const val PREFERENCES_INITIALIZATION_MESSAGE =
@@ -19,7 +15,7 @@ abstract class PreferencesFile {
 
     private var sharedPreferenceInstance: SharedPreferences? = null
 
-    private val properties: ArrayList<Property<*>> = ArrayList()
+    private val properties: ArrayList<PersistentProperty<*>> = ArrayList()
 
     fun initializeFile(context: Context) {
         sharedPreferenceInstance = context.getSharedPreferences(fileName, mode)
@@ -60,7 +56,7 @@ abstract class PreferencesFile {
         }
     }
 
-    fun attachProperty(property: Property<*>) {
+    fun attachProperty(property: PersistentProperty<*>) {
         properties.add(property)
         if (sharedPreferenceInstance != null)
             property.init()

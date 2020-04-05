@@ -1,68 +1,32 @@
 package infra.preferences.model
 
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
-import com.google.gson.reflect.TypeToken
-import infra.preferences.contract.PreferencesFile
-import java.lang.reflect.Type
 
-class Property<T> @JvmOverloads constructor(
-    private val name: String,
-    private val preferencesFile: PreferencesFile?,
-    private val type: Type,
-    private val shouldStore: Boolean = false,
-    value: T? = null
-) {
+abstract class Property<T> {
 
-    private var isInitialized = false
-
-    var value: T? = null
+    open var value: T? = null
         set(value) {
-            field = getValue(value)
-            when (isInitialized) {
-                false -> isInitialized = true
-                true -> notifyObservers()
-            }
+            notifyObservers(field, value)
+            field = value
         }
 
-    var initializationValue: T? = null
+    private val observers: ArrayList<PropertyObserver<T>> = ArrayList()
 
-    init {
-        initializationValue = value
-        preferencesFile?.attachProperty(this)
+    fun observe(lifecycle: Lifecycle?, observer: Observer<T>, vararg flags: NotificationFlag) {
+        val propertyObserver = PropertyObserver(lifecycle, observer, flags)
+        observers.add(propertyObserver)
     }
 
-    private val observers: ArrayList<Observer<T>> = ArrayList()
-
-    private fun getValue(value: T?): T? = when {
-        shouldStore && value != null -> {
-            preferencesFile?.storeValue(name, value)
-            value
-        }
-        shouldStore && value == null && !isInitialized -> {
-            preferencesFile?.retrieveValue(name, type)
-        }
-        shouldStore && value == null && isInitialized -> {
-            preferencesFile?.deleteValue(name)
-            value
-        }
-        else -> value
+    fun removeObserver(observer: Observer<T>) {
+        val propertyObserver = observers.find { it.observer == observer }
+        observers.remove(propertyObserver)
     }
 
-    fun observe(observer: Observer<T>) {
-        observers.add(observer)
-    }
-
-    fun stopObserving(observer: Observer<T>) {
-        observers.remove(observer)
-    }
-
-    fun init() {
-        value = initializationValue
-    }
-
-    private fun notifyObservers() {
+    fun notifyObservers(oldValue: T?, newValue: T?) {
         observers.forEach {
-            it.onChanged(value)
+            it.notifyObserver(oldValue, newValue)
         }
     }
+
 }
